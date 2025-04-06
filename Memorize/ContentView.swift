@@ -18,6 +18,18 @@ struct ContentView: View {
     
     @State var lastClicked: String = "figure"
     
+    var themeNames: [String: String] = ["figure": "sppoky", "airplane.arrival": "airplanes", "car": "cars"]
+    
+    var themes: [String: [String]] {
+        [
+            "figure": spooky,
+            "airplane.arrival": airplanes,
+            "car": cars
+        ]
+    }
+    
+
+    
         
     var body: some View {
         VStack{
@@ -30,22 +42,17 @@ struct ContentView: View {
             Spacer()
             
             HStack{
-                VStack{
-                    renderThemes(themeName: "figure")
-                    Text("Spooky")
-                          .font(.footnote)
-                }
-                Spacer()
-                VStack{
-                    renderThemes(themeName: "airplane.arrival")
-                    Text("Airplanes")
-                          .font(.footnote)
-                }
-                Spacer()
-                VStack{
-                    renderThemes(themeName: "car")
-                    Text("Cars")
-                          .font(.footnote)
+                ForEach(themes.keys.sorted(), id: \.self){ key in
+                    VStack{
+                        renderThemes(themeName: key)
+                        Text(themeNames[key] ?? "")
+                            .font(.footnote)
+                    }
+                    
+                    
+                    if key != themes.keys.sorted().last {
+                        Spacer().frame(width: 65)
+                    }
                 }
 
             }.padding(.bottom, 20)
@@ -64,33 +71,15 @@ struct ContentView: View {
             .font(.largeTitle)
             .foregroundColor(.pink)
             .onTapGesture {
-                if themeName == "airplane.arrival"{
-                    if lastClicked == "airplane.arrival"{
-                        return
-                    }else{
-                        currentArray = airplanes
-                        lastClicked = "airplane.arrival"
-                        currentArray.shuffle()
-                    }
-                }else if themeName == "figure"{
-                    if lastClicked == "figure"{
-                        
-                    }else {
-                        currentArray = spooky
-                        lastClicked = "figure"
-                        currentArray.shuffle()
-                    }
-                }else if themeName == "car"{
-                    if lastClicked == "car"{
-                        return
-                    }else{
-                        currentArray = cars
-                        lastClicked = "car"
-                        currentArray.shuffle()
-                    }
-                        
-                }
+                themeSelector(themeName: themeName)
             }
+    }
+    
+    func themeSelector(themeName: String){
+        guard themeName != lastClicked else { return }
+        currentArray = themes[themeName] ?? []
+        currentArray.shuffle()
+        lastClicked = themeName
     }
     
     var gameHeader: some View{
