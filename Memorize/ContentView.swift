@@ -8,56 +8,105 @@
 import SwiftUI
 
 struct ContentView: View {
-    let emojis: Array<String> = ["👻", "🎃", "👿", "🕷️", "☠️", "💀", "🕸️", "🧙"]
-    @State var cardCount: Int = 4
+   @State var spooky: Array<String> = ["👻", "🎃", "👿", "🕷️", "☠️", "💀", "🕸️", "🧙", "👻", "🎃", "👿", "🕷️", "☠️", "💀", "🕸️", "🧙"]
     
+    @State var airplanes: Array<String> = ["✈️", "🛫", "🛬", "🛩️", "✈","✈️", "🛫", "🛬", "🛩️", "✈"]
+    
+    @State var cars: Array<String> = ["🚘", "🚕", "🏎️", "🚠", "🚔", "🚘", "🚕", "🏎️", "🚠", "🚔"]
+    
+    @State var currentArray: Array<String> = []
+    
+    @State var lastClicked: String = "figure"
+    
+        
     var body: some View {
         VStack{
-            ScrollView{
-                cards
+            gameHeader
+            ScrollView {
+                cards(emoticons: currentArray)
             }
+
+            
             Spacer()
-            cardCountAdjusters
+            
+            HStack{
+                VStack{
+                    renderThemes(themeName: "figure")
+                    Text("Spooky")
+                          .font(.footnote)
+                }
+                Spacer()
+                VStack{
+                    renderThemes(themeName: "airplane.arrival")
+                    Text("Airplanes")
+                          .font(.footnote)
+                }
+                Spacer()
+                VStack{
+                    renderThemes(themeName: "car")
+                    Text("Cars")
+                          .font(.footnote)
+                }
+
+            }.padding(.bottom, 20)
+            
+            
         }
-        .padding()
+        .padding(20)
+        .onAppear{
+            currentArray = spooky
+        }
+        
     }
     
-    var cardCountAdjusters: some View{
-        HStack{
-            cardRemover
-            Spacer()
-            cardAdder
-        }
-        .imageScale(.large)
-        .font(.largeTitle)
+    func renderThemes(themeName: String) -> some View{
+        Image(systemName: themeName)
+            .font(.largeTitle)
+            .foregroundColor(.pink)
+            .onTapGesture {
+                if themeName == "airplane.arrival"{
+                    if lastClicked == "airplane.arrival"{
+                        return
+                    }else{
+                        currentArray = airplanes
+                        lastClicked = "airplane.arrival"
+                        currentArray.shuffle()
+                    }
+                }else if themeName == "figure"{
+                    if lastClicked == "figure"{
+                        
+                    }else {
+                        currentArray = spooky
+                        lastClicked = "figure"
+                        currentArray.shuffle()
+                    }
+                }else if themeName == "car"{
+                    if lastClicked == "car"{
+                        return
+                    }else{
+                        currentArray = cars
+                        lastClicked = "car"
+                        currentArray.shuffle()
+                    }
+                        
+                }
+            }
     }
     
-    var cards: some View{
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 120))]){
-            ForEach(0..<cardCount, id: \.self){ index in
-                CardView(content: emojis[index])
+    var gameHeader: some View{
+        Text("Memorize!").font(.largeTitle).padding(20)
+    }
+    
+    
+    func cards(emoticons: Array<String>) ->  some View{
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]){
+            ForEach(0..<emoticons.count, id: \.self){ index in
+                CardView(content: emoticons[index])
                     .aspectRatio(2/3, contentMode: .fit)
+                    .frame(width: 100, height: 100)
             }
         }
         .foregroundColor(.orange)
-    }
-    
-    func cardCountAdjuster(by offset: Int, symbol: String) -> some View{
-        Button(action: {
-            cardCount += offset
-        }, label: {
-            Image(systemName: symbol) //"rectangle.stack.badge.minus.fill")
-        })
-        .disabled(cardCount + offset < 1 || cardCount + offset > emojis.count)
-    }
-    
-    var cardRemover: some View{
-        return cardCountAdjuster(by: -1, symbol: "rectangle.stack.badge.minus.fill")
-    }
-    
-    
-    var cardAdder: some View {
-        return cardCountAdjuster(by: +1, symbol: "rectangle.stack.badge.plus.fill")
     }
             
 }
@@ -65,12 +114,11 @@ struct ContentView: View {
 struct CardView: View{
     
     let content: String
-    @State var isFaceUp = true
+    @State var isFaceUp = false
     
     var body: some View{
         ZStack{
             let base = RoundedRectangle(cornerRadius: 12)
-            
             Group{
                 base.fill(.white)
                 base.strokeBorder(lineWidth: 2)
@@ -83,8 +131,6 @@ struct CardView: View{
         }
     }
 }
-
-
 
 
 
