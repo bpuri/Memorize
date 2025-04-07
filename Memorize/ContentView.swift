@@ -16,9 +16,10 @@ struct ContentView: View {
     
     @State var currentArray: Array<String> = []
     
-    @State var lastClicked: String = "figure"
-    
-    var themeNames: [String: String] = ["figure": "sppoky", "airplane.arrival": "airplanes", "car": "cars"]
+    //intializing the default selected theme
+    @State var lastClicked: String = "airplane.arrival"
+            
+    var themeNames: [String: String] = ["figure": "spooky", "airplane.arrival": "airplanes", "car": "cars"]
     
     var themes: [String: [String]] {
         [
@@ -28,16 +29,12 @@ struct ContentView: View {
         ]
     }
     
-
-    
-        
     var body: some View {
         VStack{
             gameHeader
             ScrollView {
                 cards(emoticons: currentArray)
             }
-
             
             Spacer()
             
@@ -48,7 +45,6 @@ struct ContentView: View {
                         Text(themeNames[key] ?? "")
                             .font(.footnote)
                     }
-                    
                     
                     if key != themes.keys.sorted().last {
                         Spacer().frame(width: 65)
@@ -61,7 +57,7 @@ struct ContentView: View {
         }
         .padding(20)
         .onAppear{
-            currentArray = spooky
+            currentArray = airplanes
         }
         
     }
